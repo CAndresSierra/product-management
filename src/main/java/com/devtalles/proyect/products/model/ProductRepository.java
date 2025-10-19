@@ -27,7 +27,7 @@ public class ProductRepository {
         System.out.println("Product has been added successfully");
     }
 
-    public void getProductById(Long id) throws ProductException {
+    public Product getProductById(Long id) throws ProductException {
         if(products.isEmpty()){
             throw new ProductException("Product list is empty.");
         }
@@ -36,39 +36,19 @@ public class ProductRepository {
                .findFirst();
 
         if(productFound.isPresent()){
-            productFound.stream()
-                    .forEach(p -> {
-                        System.out.println("-----------------------------");
-                        System.out.println("Id: " + p.getId());
-                        System.out.println("Name: " + p.getName());
-                        System.out.println("Price: " + p.getPrice());
-                        System.out.println("Stock: " + p.getStock());
-                        System.out.println("Category: " + p.getCategory().name());
-                        System.out.println("-----------------------------");
-                        System.out.println(" ");
-                    });
+            return productFound.get();
         } else {
             throw new ProductException("Product with id: " + id + " dont exist.");
         }
 
     }
 
-    public void getAllProducts()throws ProductException {
+    public List<Product> getAllProducts()throws ProductException {
         if(this.products.isEmpty()){
             throw new ProductException("Product list is empty.");
         }
 
-        this.products
-                .forEach( product ->{
-                        System.out.println("-----------------------------");
-                        System.out.println("Id: " + product.getId());
-                        System.out.println("Name: " + product.getName());
-                        System.out.println("Price: " + product.getPrice());
-                        System.out.println("Stock: " + product.getStock());
-                        System.out.println("Category: " + product.getCategory().name());
-                        System.out.println("-----------------------------");
-                        System.out.println(" ");
-                });
+        return products;
 
     }
 
@@ -92,30 +72,21 @@ public class ProductRepository {
             throw new ProductException("Category has a not valid value: " + category.name());
         }
 
-        List<Product> productsFound = products.stream()
-                .filter( p -> p.getCategory().name().equalsIgnoreCase(category.name()))
-                .toList();
+        Optional<List<Product>> productsFound = Optional.of(products.stream()
+                .filter(p -> p.getCategory().name().equalsIgnoreCase(category.name()))
+                .toList());
 
-        Optional<List<Product>> optionalProductsFound = Optional.of(productsFound);
-
-        if(optionalProductsFound.isPresent()){
-            productsFound
-                    .forEach( p  -> {
-                        System.out.println("-----------------------------");
-                        System.out.println("Id: " + p.getId());
-                        System.out.println("Name: " + p.getName());
-                        System.out.println("Price: " + p.getPrice());
-                        System.out.println("Stock: " + p.getStock());
-                        System.out.println("Category: " + p.getCategory().name());
-                        System.out.println("-----------------------------");
-                        System.out.println(" ");
-                    });
-        } else {
-            throw new ProductException("There arent products");
-        }
-
-
-
+        productsFound.ifPresent( products -> products.forEach(p -> {
+            System.out.println("-----------------------------");
+            System.out.println("Id: " + p.getId());
+            System.out.println("Name: " + p.getName());
+            System.out.println("Price: " + p.getPrice());
+            System.out.println("Stock: " + p.getStock());
+            System.out.println("Category: " + p.getCategory().name());
+            System.out.println("-----------------------------");
+            System.out.println(" ");
+        }));
+        productsFound.orElseThrow(() -> new ProductException("There arent products"));
 
     }
 
@@ -124,26 +95,21 @@ public class ProductRepository {
             throw new ProductException("Product list is empty.");
         }
 
-        List<Product> productsFound = products.stream()
+        Optional<List<Product>> productsFound = Optional.of(products.stream()
                 .filter( p -> p.getPrice() > price)
-                .toList();
+                .toList());
 
-        Optional<List<Product>> optionalProductsFound = Optional.of(productsFound);
-        if(optionalProductsFound.isPresent()){
-            productsFound
-                    .forEach( p  -> {
-                        System.out.println("-----------------------------");
-                        System.out.println("Id: " + p.getId());
-                        System.out.println("Name: " + p.getName());
-                        System.out.println("Price: " + p.getPrice());
-                        System.out.println("Stock: " + p.getStock());
-                        System.out.println("Category: " + p.getCategory().name());
-                        System.out.println("-----------------------------");
-                        System.out.println(" ");
-                    });
-        } else {
-            throw new ProductException("There arent products with a price more than " + "$" + price);
-        }
+        productsFound.ifPresent( products -> products.forEach(p -> {
+            System.out.println("-----------------------------");
+            System.out.println("Id: " + p.getId());
+            System.out.println("Name: " + p.getName());
+            System.out.println("Price: " + p.getPrice());
+            System.out.println("Stock: " + p.getStock());
+            System.out.println("Category: " + p.getCategory().name());
+            System.out.println("-----------------------------");
+            System.out.println(" ");
+        }) );
+        productsFound.orElseThrow(() -> new ProductException("There arent products with a price more than " + "$" + price));
     }
 
     public boolean isValid(String value) {

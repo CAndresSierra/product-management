@@ -90,7 +90,7 @@ public class ProductRepository {
 
     }
 
-    public void filterByPrice(Long price) throws ProductException {
+    public void filterByPrice(double price) throws ProductException {
         if(products.isEmpty()){
             throw new ProductException("Product list is empty.");
         }

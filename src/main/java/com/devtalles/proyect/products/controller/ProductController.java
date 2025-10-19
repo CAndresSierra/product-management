@@ -12,7 +12,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class ProductController {
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public void saveController(Long id, String name, double price, int stock, ProductCategory category)throws ProductException {
         productRepository.save(id, name, price, stock, category);
@@ -53,7 +53,7 @@ public class ProductController {
         productRepository.filterByCategory(category);
     }
 
-    public void filterByPriceController(Long price)throws ProductException{
+    public void filterByPriceController(double price)throws ProductException{
         productRepository.filterByPrice(price);
     }
 

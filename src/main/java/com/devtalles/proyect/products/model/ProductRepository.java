@@ -66,27 +66,31 @@ public class ProductRepository {
                         ));
     }
 
-    public void filterByCategory(ProductCategory category) throws ProductException {
+    public void filterByCategory(String category) throws ProductException {
         if(products.isEmpty()){
             throw new ProductException("Product list is empty.");
         }
 
-        Optional<List<Product>> productsFound = Optional.of(products.stream()
-                .filter(p -> p.getCategory().name().equalsIgnoreCase(category.name()))
-                .toList());
+        try{
+            ProductCategory categoryF = ProductCategory.valueOf(category.toUpperCase());
+            Optional<List<Product>> productsFound = Optional.of(products.stream()
+                    .filter(p -> p.getCategory().name().equalsIgnoreCase(categoryF.name()))
+                    .toList());
 
-        productsFound.ifPresent( products -> products.forEach(p -> {
-            System.out.println("-----------------------------");
-            System.out.println("Id: " + p.getId());
-            System.out.println("Name: " + p.getName());
-            System.out.println("Price: " + p.getPrice());
-            System.out.println("Stock: " + p.getStock());
-            System.out.println("Category: " + p.getCategory().name());
-            System.out.println("-----------------------------");
-            System.out.println(" ");
-        }));
-        productsFound.orElseThrow(() -> new ProductException("There arent products"));
-
+            productsFound.ifPresent( products -> products.forEach(p -> {
+                System.out.println("-----------------------------");
+                System.out.println("Id: " + p.getId());
+                System.out.println("Name: " + p.getName());
+                System.out.println("Price: " + p.getPrice());
+                System.out.println("Stock: " + p.getStock());
+                System.out.println("Category: " + p.getCategory().name());
+                System.out.println("-----------------------------");
+                System.out.println(" ");
+            }));
+            productsFound.orElseThrow(() -> new ProductException("There arent products"));
+        } catch (IllegalArgumentException e){
+            System.out.println("Category has a non-valid value.");
+        }
     }
 
     public void filterByPrice(double price) throws ProductException {

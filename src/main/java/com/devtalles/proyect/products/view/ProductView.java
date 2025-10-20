@@ -2,7 +2,6 @@ package com.devtalles.proyect.products.view;
 
 import com.devtalles.proyect.products.controller.ProductController;
 import com.devtalles.proyect.products.exceptions.ProductException;
-import com.devtalles.proyect.products.model.enums.ProductCategory;
 
 import java.util.Scanner;
 
@@ -36,39 +35,19 @@ public class ProductView {
                         saveProductView();
                     break;
                 case 2:
-                    try{
                         getProductByIdView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 3:
-                    try {
                         getAllProductsView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 4:
-                    try{
                         getAllProductByCategoryView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 5:
-                    try{
                         filterByCategoryView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 6:
-                    try{
                         filterByPriceView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 7:
                     endApp = true;
@@ -85,8 +64,8 @@ public class ProductView {
         sc.nextLine();
         Long id = Long.parseLong(validateEmptyInput("Id is empty", "Id:"));
         String name = validateEmptyInput("Name is empty", "Name:");
-        Double price = Double.parseDouble(validateEmptyInput("Price is empty", "Price:"));
-        Integer stock = Integer.parseInt(validateEmptyInput("Stock is empty", "Stock:"));
+        double price = Double.parseDouble(validateEmptyInput("Price is empty", "Price:"));
+        int stock = Integer.parseInt(validateEmptyInput("Stock is empty", "Stock:"));
         String category = validateEmptyInput("Category is empty", "Category:");
 
         try{
@@ -98,45 +77,56 @@ public class ProductView {
 
     }
 
-    private void getProductByIdView()throws ProductException{
+    private void getProductByIdView(){
         sc.nextLine();
 
-        System.out.println("Id: ");
-        Long id = sc.nextLong();
-        productController.getProductByIdController(id);
+        Long id = Long.parseLong(validateEmptyInput("Id is empty", "Id:"));
+        try{
+            productController.getProductByIdController(id);
+        } catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-    private void getAllProductsView()throws ProductException{
+    private void getAllProductsView(){
+        try{
         productController.getAllProductsController();
+        }catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-    private void getAllProductByCategoryView()throws ProductException{
-        System.out.println(productController.getAllGroupByCategoryController());
+    private void getAllProductByCategoryView(){
+        try {
+            System.out.println(productController.getAllGroupByCategoryController());
+        } catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-    private void filterByCategoryView()throws ProductException{
-        sc.nextLine();
+    private void filterByCategoryView(){
+        try {
+            sc.nextLine();
 
-        String category = "";
+            String category = validateEmptyInput("Category is empty", "Category:");
 
-        do{
-            System.out.println("Category: ");
-            category = sc.nextLine();
-            if(category.trim().isEmpty()){
-                System.out.println("Category has an empty value");
-            }
-        } while(category.trim().isEmpty());
-
-        productController.filterByCategoryController(ProductCategory.valueOf(category.toUpperCase()));
+            productController.filterByCategoryController(category);
+        }catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-    private void filterByPriceView()throws ProductException{
-        sc.nextLine();
+    private void filterByPriceView(){
 
-        System.out.println("Id: ");
-        double price = sc.nextDouble();
+        try{
+            sc.nextLine();
+            double price = Double.parseDouble(validateEmptyInput("Prices is empty", "Price:"));
 
-        productController.filterByPriceController(price);
+            productController.filterByPriceController(price);
+        } catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private String validateEmptyInput(String message, String name){
@@ -150,6 +140,5 @@ public class ProductView {
         } while(input.trim().isEmpty());
 
         return input;
-
     }
 }

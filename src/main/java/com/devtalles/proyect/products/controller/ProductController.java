@@ -3,7 +3,6 @@ package com.devtalles.proyect.products.controller;
 import com.devtalles.proyect.products.exceptions.ProductException;
 import com.devtalles.proyect.products.model.Product;
 import com.devtalles.proyect.products.model.ProductRepository;
-import com.devtalles.proyect.products.model.enums.ProductCategory;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -49,7 +48,7 @@ public class ProductController {
         return productRepository.getAllGroupByCategory();
     }
 
-    public void filterByCategoryController(ProductCategory category)throws ProductException{
+    public void filterByCategoryController(String category)throws ProductException{
         productRepository.filterByCategory(category);
     }
 

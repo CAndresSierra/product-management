@@ -16,7 +16,7 @@ public class ProductView {
         this.sc = new Scanner(System.in);
     }
 
-    public void showView() throws ProductException{
+    public void showView(){
         boolean endApp = false;
 
         do{
@@ -33,11 +33,7 @@ public class ProductView {
 
             switch(op){
                 case 1:
-                    try{
                         saveProductView();
-                    } catch (ProductException e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
                 case 2:
                     try{
@@ -79,40 +75,27 @@ public class ProductView {
                     sc.close();
                     break;
                 default:
-                    throw new ProductException("Choose a valid option");
+                    System.out.println("Choose a valid option");
             }
 
         } while (!endApp);
     }
 
-    private void saveProductView()throws ProductException{
-        System.out.println("Id: ");
-        Long id = sc.nextLong();
+    private void saveProductView(){
         sc.nextLine();
+        Long id = Long.parseLong(validateEmptyInput("Id is empty", "Id:"));
+        String name = validateEmptyInput("Name is empty", "Name:");
+        Double price = Double.parseDouble(validateEmptyInput("Price is empty", "Price:"));
+        Integer stock = Integer.parseInt(validateEmptyInput("Stock is empty", "Stock:"));
+        String category = validateEmptyInput("Category is empty", "Category:");
 
-        System.out.println("Name: ");
-        String name = sc.nextLine();
-
-        System.out.println("Price: ");
-        double price = sc.nextDouble();
-
-        System.out.println("Stock");
-        int stock = sc.nextInt();
-
-        sc.nextLine();
-
-        String category = "";
-
-        do{
-            System.out.println("Category: ");
-            category = sc.nextLine();
-            if(!isValid(category.trim())){
-                System.out.println("Category has a not valid value");
-            }
-        } while(!isValid(category.trim()));
+        try{
+            productController.saveController(id, name, price, stock, category);
+        } catch (ProductException e){
+            System.out.println(e.getMessage());
+        }
 
 
-        productController.saveController(id, name, price, stock, ProductCategory.valueOf(category.toUpperCase()));
     }
 
     private void getProductByIdView()throws ProductException{
@@ -139,10 +122,10 @@ public class ProductView {
         do{
             System.out.println("Category: ");
             category = sc.nextLine();
-            if(!isValid(category)){
-                System.out.println("Category has a not valid value");
+            if(category.trim().isEmpty()){
+                System.out.println("Category has an empty value");
             }
-        } while(!isValid(category.trim()));
+        } while(category.trim().isEmpty());
 
         productController.filterByCategoryController(ProductCategory.valueOf(category.toUpperCase()));
     }
@@ -156,15 +139,17 @@ public class ProductView {
         productController.filterByPriceController(price);
     }
 
-    private boolean isValid(String value) {
-        if (value == null || value.isEmpty()) {
-            return false;
-        }
-        try {
-            ProductCategory.valueOf(value.toUpperCase());
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+    private String validateEmptyInput(String message, String name){
+        String input = "";
+        do{
+            System.out.println(name);
+            input = sc.nextLine();
+            if(input.trim().isEmpty()){
+                System.out.println(message);
+            }
+        } while(input.trim().isEmpty());
+
+        return input;
+
     }
 }

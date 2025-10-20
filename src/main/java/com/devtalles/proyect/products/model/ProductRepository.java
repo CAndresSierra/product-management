@@ -16,15 +16,18 @@ public class ProductRepository {
         this.products = new ArrayList<>();
     }
 
-    public void save(Long id, String name, double price, int stock, ProductCategory category) throws ProductException {
-        if(!isValid(category.name())){
-            throw new ProductException("Category has a not valid value: " + category.name());
+    public void save(Long id, String name, double price, int stock, String category) {
+
+        try{
+           ProductCategory categoryF =  ProductCategory.valueOf(category.toUpperCase());
+            Product newProduct = new Product(id, name, price, stock, categoryF);
+
+            products.add(newProduct);
+            System.out.println("Product has been added successfully");
+        } catch (IllegalArgumentException e){
+            System.out.println("Category has a non-valid value");
         }
 
-        Product newProduct = new Product(id, name, price, stock, category);
-
-        products.add(newProduct);
-        System.out.println("Product has been added successfully");
     }
 
     public Product getProductById(Long id) throws ProductException {
@@ -68,10 +71,6 @@ public class ProductRepository {
             throw new ProductException("Product list is empty.");
         }
 
-        if(!isValid(category.name())){
-            throw new ProductException("Category has a not valid value: " + category.name());
-        }
-
         Optional<List<Product>> productsFound = Optional.of(products.stream()
                 .filter(p -> p.getCategory().name().equalsIgnoreCase(category.name()))
                 .toList());
@@ -110,18 +109,6 @@ public class ProductRepository {
             System.out.println(" ");
         }) );
         productsFound.orElseThrow(() -> new ProductException("There arent products with a price more than " + "$" + price));
-    }
-
-    public boolean isValid(String value) {
-        if (value == null || value.isEmpty()) {
-            return false;
-        }
-        try {
-            ProductCategory.valueOf(value.toUpperCase());
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
 

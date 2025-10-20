@@ -14,7 +14,7 @@ import java.util.Map;
 public class ProductController {
     private final ProductRepository productRepository;
 
-    public void saveController(Long id, String name, double price, int stock, ProductCategory category)throws ProductException {
+    public void saveController(Long id, String name, double price, int stock, String category)throws ProductException {
         productRepository.save(id, name, price, stock, category);
     }
 

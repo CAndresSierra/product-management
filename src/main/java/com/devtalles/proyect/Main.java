@@ -1,16 +1,27 @@
 package com.devtalles.proyect;
 
 
+import com.devtalles.proyect.db.ConnectionPool;
 import com.devtalles.proyect.products.controller.ProductController;
 import com.devtalles.proyect.products.model.ProductRepository;
 import com.devtalles.proyect.products.view.ProductView;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class Main {
     public static void main(String[] args) {
-        ProductRepository productRepository = new ProductRepository();
-        ProductController productController = new ProductController(productRepository);
-        ProductView view  = new ProductView(productController);
-
-        view.showView();
+        try(Connection connection = ConnectionPool.getConnection()){
+            System.out.println("Database successfully connected");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            ConnectionPool.closePool();
+        }
+//        ProductRepository productRepository = new ProductRepository();
+//        ProductController productController = new ProductController(productRepository);
+//        ProductView view  = new ProductView(productController);
+//
+//        view.showView();
     }
 }

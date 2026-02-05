@@ -6,6 +6,7 @@ import com.devtalles.proyect.products.model.Product;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProductDAO {
     private final Connection connection;
@@ -16,7 +17,7 @@ public class ProductDAO {
 
     public Product save(Product product) throws SQLException {
         String sql = "INSERT INTO products (name, price, stock, category_id) " +
-                "VALUES (?, ?, ?, ?)";
+                " VALUES (?, ?, ?, ?)";
 
         try(
                 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -43,7 +44,7 @@ public class ProductDAO {
 
     public void update(Product product) throws SQLException{
         String sql = "UPDATE products SET name = ?, price = ?, stock = ?, category_id = ? " +
-                "WHERE id = ?";
+                " WHERE id = ?";
 
         try(
                 PreparedStatement statement = connection.prepareStatement(sql);
@@ -74,8 +75,8 @@ public class ProductDAO {
 
     public List<Product> findAll() throws SQLException{
         String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
-                "c.name as category_name\n" +
-                "FROM products p JOIN categories c ON p.category_id = c.id"
+                " c.name as category_name\n" +
+                " FROM products p JOIN categories c ON p.category_id = c.id"
                 ;
         List<Product> products = new ArrayList<>();
         try(
@@ -89,6 +90,58 @@ public class ProductDAO {
 
         }
 
+        return products;
+    }
+
+    public boolean existById(Long id){
+        if(id == null) return false;
+        return this.findById(id).isPresent();
+    }
+
+    public Optional<Product> findById(Long id){
+        String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
+                " c.name as category_name\n" +
+                " FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ?"
+                ;
+        try(
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()){
+
+                if(resultSet.next()){
+                    return Optional.of(this.mapResult(resultSet));
+                }
+
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return Optional.empty();
+    }
+
+    public List<Product> findByCategoryId(Long categoryId){
+        String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
+                " c.name as category_name\n" +
+                " FROM products p JOIN categories c ON p.category_id = c.id WHERE p.category_id = ?"
+                ;
+        List<Product> products = new ArrayList<>();
+        try(
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setLong(1, categoryId);
+
+            try (ResultSet resultSet = statement.executeQuery()){
+
+                while(resultSet.next()){
+                   products.add(this.mapResult(resultSet));
+                }
+
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
         return products;
     }
 

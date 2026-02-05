@@ -1,6 +1,7 @@
 package com.devtalles.proyect.products.model;
 
 
+import com.devtalles.proyect.category.model.Category;
 import com.devtalles.proyect.products.model.enums.ProductCategory;
 import lombok.*;
 
@@ -13,5 +14,5 @@ public class Product {
     private String name;
     private double price;
     private int stock;
-    private ProductCategory category;
+    private Category category;
 }

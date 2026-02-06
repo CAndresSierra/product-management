@@ -2,6 +2,7 @@ package com.devtalles.proyect.products.model;
 
 import com.devtalles.proyect.category.model.Category;
 import com.devtalles.proyect.category.model.CategoryDAO;
+import com.devtalles.proyect.db.ConnectionPool;
 import com.devtalles.proyect.products.exceptions.ProductException;
 import com.devtalles.proyect.products.model.enums.ProductCategory;
 import com.devtalles.proyect.products.persistence.ProductDAO;
@@ -16,22 +17,26 @@ public class ProductRepository {
     private final ProductDAO productDAO;
     private final CategoryDAO categoryDAO;
 
-    public ProductRepository(Connection connection, CategoryDAO categoryDAO) throws SQLException {
-        this.productDAO = new ProductDAO(connection, categoryDAO);
-        this.products = productDAO.findAll();
+    public ProductRepository(CategoryDAO categoryDAO) throws SQLException, ProductException {
+        this.productDAO = new ProductDAO(categoryDAO);
         this.categoryDAO = categoryDAO;
+        try(Connection connection = ConnectionPool.getConnection()){
+            this.products = productDAO.findAll(connection);
+        } catch (SQLException e){
+            throw new ProductException("An error occurred during the product list initializing " + e.getMessage());
+        }
     }
 
-    public void save(Product product) throws SQLException {
-        Optional<Category> optionalCategory= categoryDAO.findByName(product.getCategory().getName());
+    public void save(Connection connection, Product product) throws SQLException {
+        Optional<Category> optionalCategory= categoryDAO.findByName(connection, product.getCategory().getName());
         if(optionalCategory.isPresent()){
          product.setCategory(optionalCategory.get());
-         productDAO.save(product);
+         productDAO.save(connection, product);
          products.add(product);
         } else {
-            Optional<Category> optionalNewCategory = categoryDAO.save(product.getCategory());
+            Optional<Category> optionalNewCategory = categoryDAO.save(connection, product.getCategory());
             product.setCategory(optionalNewCategory.get());
-            productDAO.save(product);
+            productDAO.save(connection, product);
             products.add(product);
         }
 
@@ -122,9 +127,9 @@ public class ProductRepository {
         productsFound.orElseThrow(() -> new ProductException("There arent products with a price more than " + "$" + price));
     }
 
-    public void delete(Long id) throws SQLException {
+    public void delete(Connection connection, Long id) throws SQLException {
         products.removeIf(product -> product.getId().equals(id));
-        productDAO.delete(id);
+        productDAO.delete(connection, id);
     }
 
 }

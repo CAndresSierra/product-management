@@ -10,15 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductDAO {
-    private final Connection connection;
     private final CategoryDAO categoryDAO;
 
-    public ProductDAO(Connection connection, CategoryDAO categoryDAO) {
-        this.connection = connection;
+    public ProductDAO(CategoryDAO categoryDAO) {
         this.categoryDAO = categoryDAO;
     }
 
-    public Product save(Product product) throws SQLException {
+    public Product save(Connection connection, Product product) throws SQLException {
         String sql = "INSERT INTO products (name, price, stock, category_id) " +
                 " VALUES (?, ?, ?, ?)";
 
@@ -45,7 +43,7 @@ public class ProductDAO {
         return product;
     }
 
-    public void update(Product product) throws SQLException{
+    public void update(Connection connection, Product product) throws SQLException{
         String sql = "UPDATE products SET name = ?, price = ?, stock = ?, category_id = ? " +
                 " WHERE id = ?";
 
@@ -63,7 +61,7 @@ public class ProductDAO {
         }
     }
 
-    public void delete(Long id) throws SQLException{
+    public void delete(Connection connection, Long id) throws SQLException{
         String sql = "DELETE FROM products WHERE id = ?";
         try(
                 PreparedStatement statement = connection.prepareStatement(sql);
@@ -76,7 +74,7 @@ public class ProductDAO {
         }
     }
 
-    public List<Product> findAll() throws SQLException{
+    public List<Product> findAll(Connection connection) throws SQLException{
         String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id,"  +
                 " c.name as category_name" +
                 " FROM products p JOIN categories c ON p.category_id = c.id"
@@ -96,12 +94,12 @@ public class ProductDAO {
         return productsList;
     }
 
-    public boolean existById(Long id){
+    public boolean existById(Connection connection, Long id){
         if(id == null) return false;
-        return this.findById(id).isPresent();
+        return this.findById(connection, id).isPresent();
     }
 
-    public Optional<Product> findById(Long id){
+    public Optional<Product> findById(Connection connection, Long id){
         String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
                 " c.name as category_name\n" +
                 " FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ?"
@@ -124,7 +122,7 @@ public class ProductDAO {
         return Optional.empty();
     }
 
-    public List<Product> findByCategoryId(Long categoryId){
+    public List<Product> findByCategoryId(Connection connection, Long categoryId){
         String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
                 " c.name as category_name\n" +
                 " FROM products p JOIN categories c ON p.category_id = c.id WHERE p.category_id = ?"

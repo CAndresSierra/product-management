@@ -1,11 +1,9 @@
 package com.devtalles.proyect.products.view;
 
 import com.devtalles.proyect.category.model.Category;
-import com.devtalles.proyect.category.model.CategoryDAO;
 import com.devtalles.proyect.products.controller.ProductController;
 import com.devtalles.proyect.products.exceptions.ProductException;
 import com.devtalles.proyect.products.model.Product;
-import com.devtalles.proyect.products.persistence.ProductDAO;
 
 import java.sql.SQLException;
 import java.util.Scanner;

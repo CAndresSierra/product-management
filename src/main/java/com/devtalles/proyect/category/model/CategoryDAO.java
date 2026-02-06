@@ -8,13 +8,7 @@ import java.util.Optional;
 
 
 public class CategoryDAO {
-    private final Connection connection;
-
-    public CategoryDAO(Connection connection){
-        this.connection = connection;
-    }
-
-    public Optional<Category> save(Category category){
+    public Optional<Category> save(Connection connection, Category category){
         String sql = "INSERT INTO categories (name) " +
                 "VALUES (?)";
 
@@ -41,7 +35,7 @@ public class CategoryDAO {
         return Optional.empty();
     }
 
-    public Optional<Category> findById(Long id){
+    public Optional<Category> findById(Connection connection, Long id){
         String sql = "SELECT * FROM categories WHERE id = ?";
         try(
                 PreparedStatement statement = connection.prepareStatement(sql)
@@ -61,7 +55,7 @@ public class CategoryDAO {
         return Optional.empty();
     }
 
-    public Optional<Category> findByName(String name){
+    public Optional<Category> findByName(Connection connection, String name){
         String sql = "SELECT * FROM categories WHERE name = ?";
         try(
                 PreparedStatement statement = connection.prepareStatement(sql)
@@ -81,7 +75,7 @@ public class CategoryDAO {
         return Optional.empty();
     }
 
-    public List<Category> findAll() throws SQLException{
+    public List<Category> findAll(Connection connection) throws SQLException{
         String sql = "SELECT * FROM categories";
         List<Category> categories = new ArrayList<>();
         try(
@@ -98,7 +92,7 @@ public class CategoryDAO {
         return categories;
     }
 
-    public void update(Category category) throws SQLException{
+    public void update(Connection connection, Category category) throws SQLException{
         String sql = "UPDATE categories SET name = ? WHERE id = ?";
 
         try(
@@ -112,7 +106,7 @@ public class CategoryDAO {
         }
     }
 
-    public void delete(Long id) throws SQLException{
+    public void delete(Connection connection, Long id) throws SQLException{
         String sql = "DELETE FROM categories WHERE id = ?";
         try(
                 PreparedStatement statement = connection.prepareStatement(sql);

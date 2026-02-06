@@ -1,10 +1,12 @@
 package com.devtalles.proyect.products.controller;
 
+import com.devtalles.proyect.db.ConnectionPool;
 import com.devtalles.proyect.products.exceptions.ProductException;
 import com.devtalles.proyect.products.model.Product;
 import com.devtalles.proyect.products.model.ProductRepository;
 import lombok.AllArgsConstructor;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,9 @@ public class ProductController {
     private final ProductRepository productRepository;
 
     public void saveController(Product product) throws ProductException, SQLException {
-        productRepository.save(product);
+        try(Connection connection = ConnectionPool.getConnection()){
+            productRepository.save(connection, product);
+        }
     }
 
     public void getProductByIdController(Long id)throws ProductException{

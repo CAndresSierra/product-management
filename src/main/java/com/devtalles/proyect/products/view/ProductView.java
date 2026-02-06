@@ -1,8 +1,13 @@
 package com.devtalles.proyect.products.view;
 
+import com.devtalles.proyect.category.model.Category;
+import com.devtalles.proyect.category.model.CategoryDAO;
 import com.devtalles.proyect.products.controller.ProductController;
 import com.devtalles.proyect.products.exceptions.ProductException;
+import com.devtalles.proyect.products.model.Product;
+import com.devtalles.proyect.products.persistence.ProductDAO;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -62,19 +67,17 @@ public class ProductView {
 
     private void saveProductView(){
         sc.nextLine();
-        Long id = Long.parseLong(validateEmptyInput("Id is empty", "Id:"));
         String name = validateEmptyInput("Name is empty", "Name:");
         double price = Double.parseDouble(validateEmptyInput("Price is empty", "Price:"));
         int stock = Integer.parseInt(validateEmptyInput("Stock is empty", "Stock:"));
         String category = validateEmptyInput("Category is empty", "Category:");
 
         try{
-            productController.saveController(id, name, price, stock, category);
-        } catch (ProductException e){
+            Category newCategory = new Category(category.toUpperCase());
+            productController.saveController(new Product(name, price, stock, newCategory));
+        } catch (ProductException | SQLException e){
             System.out.println(e.getMessage());
         }
-
-
     }
 
     private void getProductByIdView(){

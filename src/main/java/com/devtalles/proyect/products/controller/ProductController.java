@@ -5,6 +5,7 @@ import com.devtalles.proyect.products.model.Product;
 import com.devtalles.proyect.products.model.ProductRepository;
 import lombok.AllArgsConstructor;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,8 @@ import java.util.Map;
 public class ProductController {
     private final ProductRepository productRepository;
 
-    public void saveController(Long id, String name, double price, int stock, String category)throws ProductException {
-        productRepository.save(id, name, price, stock, category);
+    public void saveController(Product product) throws ProductException, SQLException {
+        productRepository.save(product);
     }
 
     public void getProductByIdController(Long id)throws ProductException{
@@ -24,7 +25,7 @@ public class ProductController {
         System.out.println("Name: " + productFound.getName());
         System.out.println("Price: " + productFound.getPrice());
         System.out.println("Stock: " + productFound.getStock());
-        System.out.println("Category: " + productFound.getCategory().name());
+        System.out.println("Category: " + productFound.getCategory().getName());
         System.out.println("-----------------------------");
         System.out.println(" ");
     }
@@ -38,7 +39,7 @@ public class ProductController {
                     System.out.println("Name: " + p.getName());
                     System.out.println("Price: " + p.getPrice());
                     System.out.println("Stock: " + p.getStock());
-                    System.out.println("Category: " + p.getCategory().name());
+                    System.out.println("Category: " + p.getCategory().getName());
                     System.out.println("-----------------------------");
                     System.out.println(" ");
                 });

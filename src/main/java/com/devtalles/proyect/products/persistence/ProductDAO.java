@@ -1,6 +1,7 @@
 package com.devtalles.proyect.products.persistence;
 
 import com.devtalles.proyect.category.model.Category;
+import com.devtalles.proyect.category.model.CategoryDAO;
 import com.devtalles.proyect.products.model.Product;
 
 import java.sql.*;
@@ -10,9 +11,11 @@ import java.util.Optional;
 
 public class ProductDAO {
     private final Connection connection;
+    private final CategoryDAO categoryDAO;
 
-    public ProductDAO(Connection connection){
+    public ProductDAO(Connection connection, CategoryDAO categoryDAO) {
         this.connection = connection;
+        this.categoryDAO = categoryDAO;
     }
 
     public Product save(Product product) throws SQLException {
@@ -74,23 +77,23 @@ public class ProductDAO {
     }
 
     public List<Product> findAll() throws SQLException{
-        String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id\n" +
-                " c.name as category_name\n" +
+        String sql = "SELECT p.id, p.name, p.price, p.stock, p.category_id,"  +
+                " c.name as category_name" +
                 " FROM products p JOIN categories c ON p.category_id = c.id"
                 ;
-        List<Product> products = new ArrayList<>();
+        List<Product> productsList = new ArrayList<>();
         try(
                 PreparedStatement statement = connection.prepareStatement(sql);
                 ResultSet resultSet = statement.executeQuery();
         ) {
             while (resultSet.next()) {
                 Product product = this.mapResult(resultSet);
-                products.add(product);
+                productsList.add(product);
             }
 
         }
 
-        return products;
+        return productsList;
     }
 
     public boolean existById(Long id){

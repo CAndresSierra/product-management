@@ -1,10 +1,7 @@
 package com.devtalles.proyect.category.model;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,28 +14,31 @@ public class CategoryDAO {
         this.connection = connection;
     }
 
-    public Category save(Category category){
+    public Optional<Category> save(Category category){
         String sql = "INSERT INTO categories (name) " +
-                "VALUES (?) RETURNING id";
+                "VALUES (?)";
 
         try(
-                PreparedStatement statement = connection.prepareStatement(sql);
+                PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         ){
             statement.setString(1, category.getName());
 
-            try(ResultSet resultSet = statement.executeQuery()){
-                if(resultSet.next()){
-                    long id = resultSet.getLong("id");
-                    category.setId(id);
-                    System.out.println("Category inserted correctly...");
+            int rows = statement.executeUpdate();
+            if(rows > 0){
+            try(ResultSet generatedKey = statement.getGeneratedKeys()) {
+                if (generatedKey.next()) {
+                    category.setId(generatedKey.getLong(1));
+                    return Optional.of(category);
                 }
+            }
+                System.out.println("Category insert correctly");
             }
 
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
 
-        return category;
+        return Optional.empty();
     }
 
     public Optional<Category> findById(Long id){
@@ -47,6 +47,26 @@ public class CategoryDAO {
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()){
+
+                if(resultSet.next()){
+                    return Optional.of(this.mapResult(resultSet));
+                }
+
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Category> findByName(String name){
+        String sql = "SELECT * FROM categories WHERE name = ?";
+        try(
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
 
             try (ResultSet resultSet = statement.executeQuery()){
 
